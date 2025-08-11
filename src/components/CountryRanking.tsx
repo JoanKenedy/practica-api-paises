@@ -42,7 +42,7 @@ export default function CountryRanking() {
   
 
   return (
-    <div className="container-ranking w-[95%] max-h-full rounded-md py-5 px-3 border border-gray-600/20">
+    <div className="container-ranking w-[95%] m-auto max-h-full rounded-md py-5 px-3 border border-gray-600/20">
       <div className="flex flex-col gap-4  lg:grid lg:grid-cols-4 lg:gap-8 lg:py-0">
         <div className="lg:col-span-4">
           <form action="" className="lg:flex lg:justify-between">
