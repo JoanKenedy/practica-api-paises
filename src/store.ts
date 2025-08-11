@@ -27,89 +27,91 @@ type CountryStore = {
   
 };
 
-export const useCountryStore = create<CountryStore>() (devtools((set, get) => ({
+export const useCountryStore = create<CountryStore>()(
+  devtools((set, get) => ({
     countries: [],
     filteredCountries: [],
-    searchTerm: '',
-    selectedRegion: '',
-    selectedStatus: '',
-    sortBy: 'population-desc',
-    code: '',
+    searchTerm: "",
+    selectedRegion: "",
+    selectedStatus: "",
+    sortBy: "population-desc",
+    code: "",
     country: null,
-    
-    fetchData: async() => {
-       const countries = await getAllCountries();
-       set(() => ({
-         countries
-       }));
-       get().applyFilters();
-      
+
+    fetchData: async () => {
+      const countries = await getAllCountries();
+      set(() => ({
+        countries,
+      }));
+      get().applyFilters();
     },
-    fetchByRegion: async(region: string) => {
-       const result = await getCountryByRegion(region)
-       set(() => ({
-         countries: result ,
-       }));
-       get().applyFilters();
+    fetchByRegion: async (region: string) => {
+      const result = await getCountryByRegion(region);
+      set(() => ({
+        countries: result,
+      }));
+      get().applyFilters();
     },
     setSearchTerm: (term: string) => {
-      set({searchTerm: term});
+      set({ searchTerm: term });
       get().applyFilters();
     },
     setSelectedRegion: (region: string) => {
-      set({ selectedRegion: region});
+      set({ selectedRegion: region });
       get().applyFilters();
     },
     setSelectedStatus: (status: string) => {
-      set({ selectedStatus: status});
+      set({ selectedStatus: status });
       get().applyFilters();
     },
     setSortBy: (sortBy: string) => {
       set({ sortBy });
       get().applyFilters();
     },
+    // ...existing code...
     applyFilters: () => {
       const { countries, searchTerm, selectedStatus, sortBy } = get();
-        let sorted = [...countries];
-        if (searchTerm) {
-          const term = searchTerm.toLowerCase();
-          sorted = sorted.filter(
-            (c) =>
-              c.name.common.toLowerCase().includes(term) ||
-              c.region.toLowerCase().includes(term) ||
-              (c.subregion && c.subregion.toLowerCase().includes(term))
-          );
-        }
+      let sorted = [...countries];
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        sorted = sorted.filter(
+          (c) =>
+            c.name.common.toLowerCase().includes(term) ||
+            (c.region ?? "").toLowerCase().includes(term) ||
+            (c.subregion && c.subregion.toLowerCase().includes(term))
+        );
+      }
 
-        if (selectedStatus === "independent") {
-          sorted = sorted.filter((c) => c.independent === true);
-        } else if (selectedStatus === "unMember") {
-          sorted = sorted.filter((c) => c.unMember === true);
-        }
+      if (selectedStatus === "independent") {
+        sorted = sorted.filter((c) => c.independent === true);
+      } else if (selectedStatus === "unMember") {
+        sorted = sorted.filter((c) => c.unMember === true);
+      }
 
-        switch (sortBy) {
-          case "name-asc":
-            sorted.sort((a, b) => a.name.common.localeCompare(b.name.common));
-            break;
-          case "name-desc":
-            sorted.sort((a, b) => b.name.common.localeCompare(a.name.common));
-            break;
-          case "population-desc":
-            sorted.sort((a, b) => b.population - a.population);
-            break;
-          case "area-desc":
-            sorted.sort((a, b) => b.area - a.area);
-            break;
-        }  
+      switch (sortBy) {
+        case "name-asc":
+          sorted.sort((a, b) => a.name.common.localeCompare(b.name.common));
+          break;
+        case "name-desc":
+          sorted.sort((a, b) => b.name.common.localeCompare(a.name.common));
+          break;
+        case "population-desc":
+          sorted.sort((a, b) => (b.population ?? 0) - (a.population ?? 0));
+          break;
+        case "area-desc":
+          sorted.sort((a, b) => (b.area ?? 0) - (a.area ?? 0));
+          break;
+      }
 
-        set({ filteredCountries: sorted })
+      set({ filteredCountries: sorted });
     },
+    // ...existing code...
     setCountry: (country: Country | null) => {
-      set({country});
+      set({ country });
     },
     fetchCountryDetails: async (code: string) => {
       const countryData = await fetchCountryDetails(code);
       set({ country: countryData });
-    }
-    
-})))
+    },
+  }))
+);
